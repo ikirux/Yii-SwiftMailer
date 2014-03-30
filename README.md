@@ -58,7 +58,7 @@ Set up yii component via config:
 	'username' => 'smptusername',
 	'password' => '123456',
 
-	// Activate the AntiFlood plugin
+	// Activate the Logger plugin
 	// more information http://swiftmailer.org/docs/plugins.html#using-the-logger-plugin
 	//'activateLoggerPlugin' => true,
 
