@@ -5,13 +5,13 @@ Wrapper of Swiftmailer for Yii framework version 1.x
 
 Current swiftmailer version supported  5.1.0
 
-It supports this features:
+It supports these features:
 
 1. smtp, sendmail or mail transport
 2. ssl or tls security
 3. setTo, CC, BCC
-4. Attachment of dinamic (generate at runtime) and static files
-5. Embed files (statics and dinamics)
+4. Attachment of dynamic (generate at runtime) and static files
+5. Embed files (statics and dynamic)
 6. Swiftmailer's plugin (AntiFlood, Throtter, Logger)
 
 You can review the official documentation at http://swiftmailer.org/docs/introduction.html
@@ -114,7 +114,7 @@ Yii::app()->mailer->setSubject('A great subject')
 	->send();
 ```
 
-Attaching Dinamic Files
+Attaching Dynamic Files
 
 ```
 // Create your file contents in the normal way, but don't write them to disk
@@ -146,7 +146,7 @@ Yii::app()->mailer->setSubject('A great subject')
 	->send();
 ```
 
-Embedding Dinamic Files
+Embedding Dynamic Files
 
 ```
 // Create your file contents in the normal way, but don't write them to disk
