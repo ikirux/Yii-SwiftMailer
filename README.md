@@ -3,16 +3,16 @@ Yii-SwiftMailer
 
 Wrapper of Swiftmailer for Yii framework version 1.x
 
-Current Swiftmailer version supported  5.1.0
+Current swiftmailer version supported  5.1.0
 
 It supports this features:
 
-1) smtp, sendmail or mail transport
-2) ssl or tls security
-3) setTo, CC, BCC
-4) Attachment of dinamic (generate at runtime) and static files
-5) Embed files (statics and dinamics)
-6) Swiftmailer's plugin (AntiFlood, Throtter, Logger)
+1. smtp, sendmail or mail transport
+2. ssl or tls security
+3. setTo, CC, BCC
+4. Attachment of dinamic (generate at runtime) and static files
+5. Embed files (statics and dinamics)
+6. Swiftmailer's plugin (AntiFlood, Throtter, Logger)
 
 You can review the official documentation at http://swiftmailer.org/docs/introduction.html
 
@@ -140,9 +140,7 @@ Yii::app()->mailer->setSubject('A great subject')
 	'  Here is an image {{image}}' .
 	'  Rest of message' .
 	' </body>' .
-	'</html>',
-	  'text/html' // Mark the content-type as HTML
-	);
+	'</html>')
 	->setAltBody('Message plain text alternative')
 	->embedFile('{{image}}', '/path/to/file.jpg')
 	->send();
@@ -163,9 +161,7 @@ Yii::app()->mailer->setSubject('A great subject')
 	'  Here is an image {{image}}' .
 	'  Rest of message' .
 	' </body>' .
-	'</html>',
-	  'text/html' // Mark the content-type as HTML
-	);
+	'</html>')
 	->setAltBody('Message plain text alternative')
 	->embedDinamicFile('{{image}}', $img_data, 'image/jpeg', 'image.jpg')
 	->send();
