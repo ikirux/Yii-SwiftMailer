@@ -311,7 +311,15 @@ class SwiftMailer extends CComponent
 		}
 
 		if ($this->activateThrotterPlugin) {
-			$mailer->registerPlugin(new Swift_Plugins_ThrottlerPlugin($this->setThrotterPluginParams['rate'], $this->setFloodPluginParams['mode']));
+			if ($this->setThrotterPluginParams['mode'] == 3) {
+				$mode = self::MESSAGES_PER_MINUTE;
+			} elseif ($this->setThrotterPluginParams['mode'] == 2) {
+				$mode = self::MESSAGES_PER_SECOND;
+			} else {
+				$mode = self::BYTES_PER_MINUTE;
+			}
+			
+			$mailer->registerPlugin(new Swift_Plugins_ThrottlerPlugin($this->setThrotterPluginParams['rate'], $mode));
 		}
 
 		if ($this->activateLoggerPlugin) {
