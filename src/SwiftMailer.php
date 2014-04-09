@@ -151,6 +151,21 @@ class SwiftMailer extends CComponent
 	 */
 	public $activateLoggerPlugin = false;		
 
+	/**
+	 * @param string Enable Engine Plugin
+	 */
+	public $engine = '';
+
+	/**
+	 * @param string theme used to send emails
+	 */
+	public $theme = '';
+
+	/**
+	 * @param array vars used in a mail theme
+	 */	
+	protected $_vars = [];	
+
 	public function init()
 	{
 		if (!class_exists('Swift', false)) {
@@ -222,6 +237,12 @@ class SwiftMailer extends CComponent
 			}
 		}
 
+		return $this;
+	}
+
+	public function setVar($var, $value)
+	{
+		$this->_vars[] = ['var' => $var, 'value' => $value];
 		return $this;
 	}
 
@@ -398,8 +419,23 @@ class SwiftMailer extends CComponent
 			}
 		}
 
-		$message->setBody($this->_body, 'text/html');
+		// we use a engine template
+		if (!empty($this->engine)) {
+			// we try get the mail theme, if not we use setBody
+			if ($themeContent = @file_get_contents(YiiBase::getPathOfAlias('webroot.themes.mail.' . $this->engine . '.' . $this->theme) . DIRECTORY_SEPARATOR . 'theme.html')) {
+				// We apply the vars
+				foreach ($this->_vars as $var) {
+					$themeContent = str_replace('{{' . $var['var'] . '}}', $var['value'], $themeContent);
+				}
 
+				$message->setBody($themeContent, 'text/html');
+			} else {
+				$message->setBody($this->_body, 'text/html');
+			}
+		} else {
+			$message->setBody($this->_body, 'text/html');	
+		}
+		
 		$result = $mailer->send($message, $this->_failures);
 
 		if ($this->activateLoggerPlugin) {
