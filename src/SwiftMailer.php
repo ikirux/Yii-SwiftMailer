@@ -201,6 +201,12 @@ class SwiftMailer extends CComponent
 		return $this;
 	}
 
+	public function setTo($address)
+	{
+		$this->_addresses = $address;
+		return $this;
+	}
+	
 	public function addAddress($address)
 	{
 		if (is_array($address)) {
