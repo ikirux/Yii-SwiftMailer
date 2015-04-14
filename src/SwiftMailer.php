@@ -5,7 +5,7 @@
  *
  * @author Carlos Pinto 'ikirux' ikirux@gmail.com
  */
-class SwiftMailer extends CComponent
+class SwiftMailer extends CApplicationComponent
 {
 	/** Constants using by Throttler Plugin */
 
@@ -24,145 +24,149 @@ class SwiftMailer extends CComponent
      */
     const MESSAGES_PER_MINUTE = 0x10;
 
+	const MAILER_FILE = 'file';
+	const MAILER_MAIL = 'mail';
+	const MAILER_SMTP = 'smtp';
+	const MAILER_SENDMAIL = 'sendmail';
 	/**
-	 * smtp, sendmail or mail
+	 * @var string smtp, sendmail or mail
 	 */
-	public $mailer = 'sendmail';
+	public $mailer = self::MAILER_SENDMAIL;
 
 	/**
-	 * SMTP outgoing mail server host
+	 * @var string SMTP outgoing mail server host
 	 */
 	public $host;
 
 	/**
-	 * Outgoing SMTP server port
+	 * @var int Outgoing SMTP server port
 	 */
 	public $port = 25;
 
 	/**
-	 * SMTP Relay account username
+	 * @var string SMTP Relay account username
 	 */
 	public $username;
 
 	/**
-	 * SMTP Relay account password
+	 * @var string SMTP Relay account password
 	 */
 	public $password;
 
 	/**
-	 * SMTP security (ssl or tls)
+	 * @var string SMTP security (ssl or tls)
 	 */
 	public $security;
 
 	/**
-	 * @param mixed Email address messages are going to be sent "from"
+	 * @var mixed Email address messages are going to be sent "from"
 	 */
 	public $from;
 
 	/**
-	 * @param The character set of the message
+	 * @var string The character set of the message
 	 */
 	public $charset;	
 
 	/**
-	 * @param string sendmailCommand (default '/usr/bin/sendmail -t')
+	 * @var string sendmailCommand (default '/usr/bin/sendmail -t')
 	 * @example '/usr/sbin/exim -bs'
 	 * @example '/usr/bin/sendmail -t'
 	 */
 	public $sendmailCommand = '/usr/bin/sendmail -t';
 
 	/**
-	 * @param string HTML Message Body
+	 * @var string HTML Message Body
 	 */
 	protected $_body = null;
 
 	/**
-	 * @param string Alternative message body (plain text)
+	 * @var string Alternative message body (plain text)
 	 */	
 	protected $_altBody = null;
 
 	/**
-	 * @param string Message Subject
+	 * @var string Message Subject
 	 */
 	protected $_subject = null;
 
 	/**
-	 * @param array Set the To addresses with an associative array
+	 * @var array Set the To addresses with an associative array
 	 */
 	protected $_addresses = [];
 
 	/**
-	 * @param array Specifies the addresses of recipients who will be copied in on the message
+	 * @var array Specifies the addresses of recipients who will be copied in on the message
 	 */
 	protected $_ccAddresses = [];
 
 	/**
-	 * @param array Specifies the addresses of recipients who the message will be blind-copied to
+	 * @var array Specifies the addresses of recipients who the message will be blind-copied to
 	 */
 	protected $_bccAddresses = [];
 
 	/**
-	 * @param array Attachments are downloadable parts of a message
+	 * @var array Attachments are downloadable parts of a message
 	 */	
 	protected $_attachments = [];
 
 	/**
-	 * @param array Files that are generated at runtime and that are parts of a message
+	 * @var array Files that are generated at runtime and that are parts of a message
 	 */	
 	protected $_dinamicAttachments = [];
 
 	/**
-	 * @param array Files that be embedded in a message
+	 * @var array Files that be embedded in a message
 	 */	
 	protected $_embedFiles = [];
 
 	/**
-	 * @param array Files that are generated at runtime and that be embedded in a message
+	 * @var array Files that are generated at runtime and that be embedded in a message
 	 */	
 	protected $_embedDinamicFiles = [];
 
 	/**
-	 * @param array Collection of recipients that were rejected
+	 * @var array Collection of recipients that were rejected
 	 */	
 	protected $_failures = [];
 
 	/**
-	 * @param bool Enable AntiFlood plugin
+	 * @var bool Enable AntiFlood plugin
 	 */
 	public $activateAntiFloodPlugin = false;
 
 	/**
-	 * @param array AntiFlood plugin parameters
+	 * @var array AntiFlood plugin parameters
 	 */	
 	public $setFloodPluginParams = ['threshold' => 100, 'sleep' => 30];
 
 	/**
-	 * @param bool Enable Throtter plugin
+	 * @var bool Enable Throtter plugin
 	 */
 	public $activateThrotterPlugin = false;	
 
 	/**
-	 * @param array Throtter plugin parameters
+	 * @var array Throtter plugin parameters
 	 */	
 	public $setThrotterPluginParams = ['rate' => 100, 'mode' => self::BYTES_PER_MINUTE];
 
 	/**
-	 * @param bool Enable Logger plugin
+	 * @var bool Enable Logger plugin
 	 */
 	public $activateLoggerPlugin = false;		
 
 	/**
-	 * @param string Enable Engine Plugin
+	 * @var string Enable Engine Plugin
 	 */
 	public $engine = '';
 
 	/**
-	 * @param string theme used to send emails
+	 * @var string theme used to send emails
 	 */
 	public $theme = '';
 
 	/**
-	 * @param array vars used in a mail theme
+	 * @var array vars used in a mail theme
 	 */	
 	protected $_vars = [];	
 
@@ -331,7 +335,7 @@ class SwiftMailer extends CComponent
 	public function send()
 	{
 		// Create the Mailer using your created Transport
-		$mailer = Swift_Mailer::newInstance($this->loadTransport());
+		$mailer = new Swift_Mailer($this->loadTransport());
 
 		if ($this->activateAntiFloodPlugin) {
 			$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin($this->setFloodPluginParams['threshold'], $this->setFloodPluginParams['sleep']));
@@ -355,7 +359,7 @@ class SwiftMailer extends CComponent
 		}
 
 		// Create a message with basic settings
-		$message = Swift_Message::newInstance($this->_subject)
+		$message = (new Swift_Message($this->_subject))
 			->setFrom($this->from)
 			->setTo($this->_addresses);
 
@@ -399,7 +403,7 @@ class SwiftMailer extends CComponent
 		// Attach files that are generated at runtime
 		if (!empty($this->_dinamicAttachments)) {
 			foreach ($this->_dinamicAttachments as $attachment) {
-				$message->attach(Swift_Attachment::newInstance($attachment['data'], $attachment['fileName'], $attachment['mimeType']));				
+				$message->attach(new Swift_Attachment($attachment['data'], $attachment['fileName'], $attachment['mimeType']));
 			}
 		}	
 
@@ -419,7 +423,7 @@ class SwiftMailer extends CComponent
 			foreach ($this->_embedDinamicFiles as $embedFile) {
 				$this->_body = str_replace(
 					$embedFile['wildcard'], 
-					'<img src="' . $message->embed(Swift_Image::newInstance($embedFile['data'], $embedFile['fileName'], $embedFile['mimeType'])) . '" alt="Image" />', 
+					'<img src="' . $message->embed(new Swift_Image($embedFile['data'], $embedFile['fileName'], $embedFile['mimeType'])) . '" alt="Image" />',
 					$this->_body
 				);
 			}
@@ -453,22 +457,69 @@ class SwiftMailer extends CComponent
 
 	protected function loadTransport()
 	{
-		if ($this->mailer == 'smtp') {
-			$transport = Swift_SmtpTransport::newInstance($this->host, $this->port, $this->security);
+		switch ($this->mailer) {
+			case self::MAILER_FILE:
+				$transport = new Swift_FileTransport();
+				break;
+			case self::MAILER_MAIL:
+				$transport = new Swift_MailTransport();
+				break;
+			case self::MAILER_SMTP:
+				$transport = new Swift_SmtpTransport($this->host, $this->port, $this->security);
 
-			if ($this->username) {
-				$transport->setUsername($this->username);
-			}
+				if ($this->username) {
+					$transport->setUsername($this->username);
+				}
 
-			if ($this->password) {
-				$transport->setPassword($this->password);
-			}
-		} elseif ($this->mailer ==  'sendmail') {
-			$transport = Swift_SendmailTransport::newInstance($this->sendmailCommand);
-		} elseif ($this->mailer == 'mail') {
-			$transport = Swift_MailTransport::newInstance();
+				if ($this->password) {
+					$transport->setPassword($this->password);
+				}
+				break;
+			case self::MAILER_SENDMAIL:
+			default:
+				$transport = new Swift_SendmailTransport($this->sendmailCommand);
+				break;
 		}
 
 		return $transport;
 	}	
+}
+
+class Swift_FileTransport implements Swift_Transport
+{
+	/**
+	 * Not used.
+	 */
+	public function isStarted()
+	{
+		return false;
+	}
+
+	/**
+	 * Not used.
+	 */
+	public function start()
+	{}
+
+	/**
+	 * Not used.
+	 */
+	public function stop()
+	{}
+
+	public function send(Swift_Mime_Message $message, &$failedRecipients = null)
+	{
+		Yii::log($message->toString(),CLogger::LEVEL_WARNING,'yii\swiftmailer');
+		return (
+			count((array) $message->getTo())
+			+ count((array) $message->getCc())
+			+ count((array) $message->getBcc())
+		);
+	}
+
+	/**
+	 * Not used.
+	 */
+	public function registerPlugin(Swift_Events_EventListener $plugin)
+	{}
 }
