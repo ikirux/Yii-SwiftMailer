@@ -2,7 +2,7 @@
     "name": "ikirux/yii-swift-mailer",
     "description": "Wrapper of Swiftmailer for Yii framework version 1.x",
     "require": {
-        "swiftmailer/swiftmailer": "dev-master"
+        "swiftmailer/swiftmailer": "~5.0"
     },
     "license": "GPL2",
     "authors": [
